@@ -15,7 +15,6 @@ set(COMMON_COMPILE_OPTIONS
 )
 
 set(SOURCES
-    src/main.cpp
     src/algorithms/deutsch_jozsa.cpp
     src/algorithms/grover.cpp
     src/algorithms/shor.cpp
@@ -27,14 +26,17 @@ set(SOURCES
     src/utils/utils.cpp
 )
 
-add_executable(QubitForge ${SOURCES})
+add_library(qubitforge_lib ${SOURCES})
 
-target_include_directories(QubitForge PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(qubitforge_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_compile_options(QubitForge PRIVATE ${COMMON_COMPILE_OPTIONS})
+target_compile_options(qubitforge_lib PRIVATE ${COMMON_COMPILE_OPTIONS})
+
+add_executable(QubitForge src/main.cpp)
+target_link_libraries(QubitForge PRIVATE qubitforge_lib)
 
 # Подключение дополнительных библиотек, если они появятся в будущем
 # target_link_libraries(QubitForge PRIVATE <library>)
 
-enable_testing()
+# Подключаем тесты
 add_subdirectory(tests)

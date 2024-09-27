@@ -1,0 +1,13 @@
+BasedOnStyle: Microsoft
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: Empty
+
+AccessModifierOffset: -4
+SortIncludes: false
+AlignAfterOpenBracket: Align
+
+PointerAlignment: Left
+ReferenceAlignment: Left

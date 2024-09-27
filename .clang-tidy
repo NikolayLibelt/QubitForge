@@ -1,0 +1,34 @@
+Checks: >-
+  -*,clang-analyzer-*,
+  modernize-*,
+  performance-*,
+  cppcoreguidelines-*,
+  bugprone-*,
+  readability-identifier-naming,
+  -modernize-use-trailing-return-type,
+  -performance-avoid-endl
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+FormatStyle: file
+
+CheckOptions:
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+
+  - key:             readability-identifier-naming.PublicMethodCase
+    value:           lower_case
+
+  - key:             readability-identifier-naming.PublicFieldCase
+    value:           lower_case
+
+  - key:             readability-identifier-naming.PrivateMethodPrefix
+    value:           '_'
+
+  - key:             readability-identifier-naming.PrivateFieldPrefix
+    value:           '_'
+
+  - key:             readability-identifier-naming.PrivateMethodCase
+    value:           lower_case
+
+  - key:             readability-identifier-naming.PrivateFieldCase
+    value:           lower_case

@@ -1,16 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Название проекта
 project(QubitForge VERSION 1.0 LANGUAGES CXX)
 
-# Установка стандарта C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Включение генерации compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Опции для компилятора (отладочные символы и предупреждения)
 set(COMMON_COMPILE_OPTIONS
     -Wall
     -Wextra
@@ -18,7 +14,6 @@ set(COMMON_COMPILE_OPTIONS
     -Werror
 )
 
-# Источники проекта, разложенные по папкам
 set(SOURCES
     src/main.cpp
     src/algorithms/deutsch_jozsa.cpp
@@ -32,30 +27,16 @@ set(SOURCES
     src/utils/utils.cpp
 )
 
-# Основной исполняемый файл
 add_executable(QubitForge ${SOURCES})
 
-# Папки для включения заголовков
 target_include_directories(QubitForge PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-# Опции для компилятора (отладочные символы и предупреждения)
 target_compile_options(QubitForge PRIVATE ${COMMON_COMPILE_OPTIONS})
 
 # Подключение дополнительных библиотек, если они появятся в будущем
 # target_link_libraries(QubitForge PRIVATE <library>)
 
-# Тесты
 enable_testing()
 add_subdirectory(tests)
 
-# Добавление тестов, если они существуют
-add_executable(QubitForgeTests
-    tests/test_qubit.cpp
-    tests/test_circuit.cpp
-    tests/test_gates.cpp
-    tests/test_algorithms.cpp
-    tests/test_simulator.cpp
-)
-
 target_include_directories(QubitForgeTests PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_compile_options(QubitForgeTests PRIVATE ${COMMON_COMPILE_OPTIONS})

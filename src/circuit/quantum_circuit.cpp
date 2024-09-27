@@ -1,74 +1,78 @@
 #include "quantum_circuit.h"
+#include "logger.h"
 #include "quantum_gate.h"
-#include <iostream>
-#include <vector>
 
 QuantumCircuit::QuantumCircuit(int num_qubits)
 {
-    qubits.reserve(num_qubits);
-    for (int i = 0; i < num_qubits; ++i)
+    qubits_.resize(num_qubits);
+    Logger::log_info("Создана квантовая цепь с " + std::to_string(num_qubits) + " кубитами");
+}
+
+void QuantumCircuit::add_gate(const std::function<void()>& gate_operation)
+{
+    Logger::log_debug("Добавление гейта в квантовую цепь");
+    gates_.push_back(gate_operation);
+}
+
+void QuantumCircuit::execute()
+{
+    Logger::log_info("Выполнение всех гейтов в квантовой цепи");
+    for (size_t i = 0; i < gates_.size(); ++i)
     {
-        qubits.emplace_back(); // Все кубиты инициализируются в состоянии |0>
+        Logger::log_info("Выполнение гейта " + std::to_string(i + 1));
+        gates_[i]();
+    }
+    Logger::log_info("Выполнение цепи завершено");
+}
+
+Qubit& QuantumCircuit::qubit(int index)
+{
+    Logger::log_debug("Доступ к кубиту с индексом " + std::to_string(index));
+    return qubits_[index];
+}
+
+void QuantumCircuit::display_state() const
+{
+    Logger::log_info("Отображение состояния квантовой цепи");
+    for (size_t i = 0; i < qubits_.size(); ++i)
+    {
+        Logger::log_info("Кубит " + std::to_string(i) + " состояние: ");
+        qubits_[i].display_state();
     }
 }
 
-void QuantumCircuit::apply_gate_to_qubit(const QuantumGate::Matrix& gate, int qubit_index)
+void QuantumCircuit::initialize_superposition()
 {
-    if (qubit_index < 0 || static_cast<size_t>(qubit_index) >= qubits.size())
+    for (auto& qubit : qubits_)
     {
-        std::cerr << "Ошибка: Неверный индекс кубита." << std::endl;
-        return;
-    }
-
-    Qubit& qubit = qubits[qubit_index];
-
-    // Применяем однокубитный гейт к состоянию кубита
-    std::complex<double> new_alpha = gate[0][0] * qubit.get_alpha() + gate[0][1] * qubit.get_beta();
-    std::complex<double> new_beta = gate[1][0] * qubit.get_alpha() + gate[1][1] * qubit.get_beta();
-
-    qubit = Qubit(new_alpha, new_beta);
-}
-
-void QuantumCircuit::apply_cnot(int control_index, int target_index)
-{
-    if (control_index < 0 || static_cast<size_t>(control_index) >= qubits.size() || target_index < 0 ||
-        static_cast<size_t>(target_index) >= qubits.size())
-    {
-        std::cerr << "Ошибка: Неверные индексы кубитов." << std::endl;
-        return;
-    }
-
-    auto result = QuantumGate::apply_cnot(qubits[control_index], qubits[target_index]);
-
-    qubits[control_index] = Qubit(result[0] + result[1], result[2] + result[3]);
-    qubits[target_index] = Qubit(result[0] + result[2], result[1] + result[3]);
-}
-
-void QuantumCircuit::apply_swap(int q1_index, int q2_index)
-{
-    if (q1_index < 0 || static_cast<size_t>(q1_index) >= qubits.size() || q2_index < 0 ||
-        static_cast<size_t>(q2_index) >= qubits.size())
-    {
-        std::cerr << "Ошибка: Неверные индексы кубитов." << std::endl;
-        return;
-    }
-
-    auto result = QuantumGate::apply_swap(qubits[q1_index], qubits[q2_index]);
-
-    qubits[q1_index] = Qubit(result[0] + result[1], result[2] + result[3]);
-    qubits[q2_index] = Qubit(result[0] + result[2], result[1] + result[3]);
-}
-
-void QuantumCircuit::display_circuit_state() const
-{
-    for (size_t i = 0; i < qubits.size(); ++i)
-    {
-        std::cout << "Кубит " << i << ": ";
-        qubits[i].display_state();
+        QuantumGate::apply_hadamard(qubit);
     }
 }
 
-Qubit& QuantumCircuit::get_qubit(int index)
+void QuantumCircuit::apply_mod_exp_operator(int a, int N, int index)
 {
-    return qubits[index];
+    for (auto& qubit : qubits_)
+    {
+        int result = static_cast<int>(pow(a, index)) % N;
+        if (result == 1)
+        {
+            QuantumGate::apply_cnot(qubits_[index], qubit);
+        }
+    }
+}
+
+void QuantumCircuit::apply_qft(int start_idx, int end_idx)
+{
+    QuantumGate::apply_qft(*this, start_idx, end_idx);
+}
+
+std::vector<int> QuantumCircuit::measure_all()
+{
+    std::vector<int> results;
+    results.reserve(qubits_.size());
+    for (auto& qubit : qubits_)
+    {
+        results.push_back(qubit.measure());
+    }
+    return results;
 }

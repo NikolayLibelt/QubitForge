@@ -1,31 +1,41 @@
-#include "qubit.h"
-#include <complex>
+#include "deutsch_jozsa.h"
+#include "grover.h"
+#include "logger.h"
+#include "shor.h"
 #include <iostream>
-#include <vector>
 
 int main()
 {
-    Qubit q1;
-    Qubit q2(std::complex<double>(1 / std::sqrt(2)), std::complex<double>(1 / std::sqrt(2))); // Суперпозиция
+    Logger::init_logging();
+    Logger::log_info("Программа запущена");
 
-    q1.display_state();
-    q2.display_state();
+    int choice = 0;
+    int number = 0;
+    std::cout << "Выберите алгоритм:\n1. Дойча–Йожи\n2. Гровера\n3. Шора\n";
+    std::cin >> choice;
+    Logger::log_info("Выбор пользователя: " + std::to_string(choice));
 
-    std::vector<std::complex<double>> entangledState = Qubit::entangle(q1, q2);
+    switch (choice)
+    {
+    case 1:
+        Logger::log_info("Запуск алгоритма Дойча-Йожи");
+        DeutschJozsaAlgorithm::run([](int x) { return x % 2; }, 2);
+        break;
+    case 2:
+        Logger::log_info("Запуск алгоритма Гровера");
+        GroverAlgorithm::run(2, 3);
+        break;
+    case 3:
+        std::cout << "Введите число для факторизации: ";
+        std::cin >> number;
+        Logger::log_info("Запуск алгоритма Шора для числа: " + std::to_string(number));
+        ShorAlgorithm::run(number);
+        break;
+    default:
+        Logger::log_error("Неверный выбор: " + std::to_string(choice));
+        std::cout << "Неверный выбор." << std::endl;
+    }
 
-    std::cout << "Коэффициенты запутанного состояния:" << std::endl;
-    std::cout << "|00>: " << entangledState[0] << std::endl;
-    std::cout << "|01>: " << entangledState[1] << std::endl;
-    std::cout << "|10>: " << entangledState[2] << std::endl;
-    std::cout << "|11>: " << entangledState[3] << std::endl;
-
-    std::vector<std::complex<double>> bellState = Qubit::create_bell_state();
-
-    std::cout << "Коэффициенты состояния Белла:" << std::endl;
-    std::cout << "|00>: " << bellState[0] << std::endl;
-    std::cout << "|01>: " << bellState[1] << std::endl;
-    std::cout << "|10>: " << bellState[2] << std::endl;
-    std::cout << "|11>: " << bellState[3] << std::endl;
-
+    Logger::log_info("Программа завершена");
     return 0;
 }

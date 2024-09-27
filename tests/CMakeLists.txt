@@ -1,25 +1,34 @@
 cmake_minimum_required(VERSION 3.10)
+project(QubitForgeTests)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/deps/googletest ${CMAKE_BINARY_DIR}/googletest_build)
-
-add_executable(test_circuit test_circuit.cpp)
-add_executable(test_gates test_gates.cpp)
-add_executable(test_qubit test_qubit.cpp)
-add_executable(test_simulator test_simulator.cpp)
-add_executable(test_algorithms test_algorithms.cpp)
-
-target_link_libraries(test_circuit gtest gtest_main qubitforge_lib)
-target_link_libraries(test_gates gtest gtest_main qubitforge_lib)
-target_link_libraries(test_qubit gtest gtest_main qubitforge_lib)
-target_link_libraries(test_simulator gtest gtest_main qubitforge_lib)
-target_link_libraries(test_algorithms gtest gtest_main qubitforge_lib)
+find_package(Boost REQUIRED COMPONENTS log log_setup thread system filesystem)
 
 enable_testing()
 
-add_test(NAME test_circuit COMMAND test_circuit)
-add_test(NAME test_gates COMMAND test_gates)
-add_test(NAME test_qubit COMMAND test_qubit)
-add_test(NAME test_simulator COMMAND test_simulator)
-add_test(NAME test_algorithms COMMAND test_algorithms)
+set(TEST_SOURCES
+    test_qubit.cpp
+    test_quantum_gate.cpp
+    test_quantum_circuit.cpp
+    test_quantum_register.cpp
+    test_deutsch_jozsa.cpp
+    test_grover.cpp
+    test_shor.cpp
+    test_integration.cpp
+)
+
+add_executable(run_tests ${TEST_SOURCES})
+
+target_link_libraries(run_tests
+    gtest
+    gtest_main
+    pthread
+    qubitforge_lib
+    ${Boost_LIBRARIES}
+)
+
+add_test(NAME RunAllTests COMMAND run_tests)

@@ -1,21 +1,35 @@
 #pragma once
 
-#include "quantum_gate.h"
 #include "qubit.h"
 #include <vector>
+#include <functional>
 
 class QuantumCircuit
 {
-private:
-    std::vector<Qubit> qubits;
-
 public:
     QuantumCircuit(int num_qubits);
 
-    void apply_gate_to_qubit(const QuantumGate::Matrix& gate, int qubit_index);
-    void apply_cnot(int control_index, int target_index);
-    void apply_swap(int q1_index, int q2_index);
-    Qubit& get_qubit(int index);
+    // Добавление гейта в цепь
+    void add_gate(const std::function<void()>& gate_operation);
 
-    void display_circuit_state() const;
+    // Выполнение цепи
+    void execute();
+
+    // Доступ к кубитам
+    Qubit& qubit(int index);
+
+    // Отображение состояния цепи
+    void display_state() const;
+
+    void initialize_superposition();
+
+    void apply_mod_exp_operator(int a, int N, int index);
+
+    void apply_qft(int start_idx, int end_idx);
+
+    std::vector<int> measure_all();
+
+private:
+    std::vector<Qubit> qubits_;
+    std::vector<std::function<void()>> gates_;
 };

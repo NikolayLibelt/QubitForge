@@ -38,5 +38,3 @@ target_compile_options(QubitForge PRIVATE ${COMMON_COMPILE_OPTIONS})
 
 enable_testing()
 add_subdirectory(tests)
-
-target_include_directories(QubitForgeTests PRIVATE ${PROJECT_SOURCE_DIR}/include)

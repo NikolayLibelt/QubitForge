@@ -1,4 +1,4 @@
-#include "qubit.h"
+#include "quantum_simulator/qubit.h"
 #include <complex>
 #include <iostream>
 #include <vector>

@@ -10,23 +10,52 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Включение генерации compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Основной исполняемый файл
-add_executable(QubitForge src/main.cpp)
-
 # Опции для компилятора (отладочные символы и предупреждения)
-target_compile_options(QubitForge PRIVATE
+set(COMMON_COMPILE_OPTIONS
     -Wall
     -Wextra
     -Wpedantic
     -Werror
 )
 
+# Источники проекта, разложенные по папкам
+set(SOURCES
+    src/main.cpp
+    src/algorithms/deutsch_jozsa.cpp
+    src/algorithms/grover.cpp
+    src/algorithms/shor.cpp
+    src/algorithms/quantum_algorithm.cpp
+    src/circuit/quantum_circuit.cpp
+    src/gates/quantum_gate.cpp
+    src/register/quantum_register.cpp
+    src/utils/matrix.cpp
+    src/utils/utils.cpp
+)
+
+# Основной исполняемый файл
+add_executable(QubitForge ${SOURCES})
+
 # Папки для включения заголовков
 target_include_directories(QubitForge PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+# Опции для компилятора (отладочные символы и предупреждения)
+target_compile_options(QubitForge PRIVATE ${COMMON_COMPILE_OPTIONS})
 
 # Подключение дополнительных библиотек, если они появятся в будущем
 # target_link_libraries(QubitForge PRIVATE <library>)
 
 # Тесты
-# enable_testing()
-# add_subdirectory(tests)
+enable_testing()
+add_subdirectory(tests)
+
+# Добавление тестов, если они существуют
+add_executable(QubitForgeTests
+    tests/test_qubit.cpp
+    tests/test_circuit.cpp
+    tests/test_gates.cpp
+    tests/test_algorithms.cpp
+    tests/test_simulator.cpp
+)
+
+target_include_directories(QubitForgeTests PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_options(QubitForgeTests PRIVATE ${COMMON_COMPILE_OPTIONS})
